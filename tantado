@@ -1,0 +1,163 @@
+--// WICKED V4 STYLE KEY SYSTEM
+--// FULL COMBO GUI
+
+local correctKey = "WICKEDV4"
+
+-- SERVICES
+local TweenService = game:GetService("TweenService")
+
+-- GUI
+local gui = Instance.new("ScreenGui")
+gui.Name = "WickedKeySystem"
+gui.Parent = game.CoreGui
+
+-- MAIN FRAME
+local main = Instance.new("Frame")
+main.Parent = gui
+main.Size = UDim2.new(0, 420, 0, 200)
+main.Position = UDim2.new(0.5, -210, 0.5, -100)
+main.BackgroundColor3 = Color3.fromRGB(15,15,15)
+main.BorderSizePixel = 4
+main.BorderColor3 = Color3.fromRGB(255,255,255)
+
+local corner = Instance.new("UICorner", main)
+corner.CornerRadius = UDim.new(0,8)
+
+-- IMAGE
+local bg = Instance.new("ImageLabel")
+bg.Parent = main
+bg.Size = UDim2.new(1,0,1,0)
+bg.BackgroundTransparency = 1
+bg.Image = "rbxassetid://6877822142" -- PUT IMAGE ID HERE
+
+local bgCorner = Instance.new("UICorner", bg)
+bgCorner.CornerRadius = UDim.new(0,8)
+
+-- TITLE
+local title = Instance.new("TextLabel")
+title.Parent = main
+title.BackgroundTransparency = 1
+title.Position = UDim2.new(0,0,0,10)
+title.Size = UDim2.new(1,0,0,50)
+title.Text = "WICKED [V4]"
+title.TextColor3 = Color3.fromRGB(255,255,255)
+title.TextScaled = true
+title.Font = Enum.Font.GothamBlack
+
+-- KEY BOX
+local keyBox = Instance.new("TextBox")
+keyBox.Parent = main
+keyBox.Size = UDim2.new(0,320,0,50)
+keyBox.Position = UDim2.new(0.5,-160,0.5,-10)
+keyBox.BackgroundColor3 = Color3.fromRGB(35,35,35)
+keyBox.TextColor3 = Color3.fromRGB(255,255,255)
+keyBox.PlaceholderText = "ENTER KEY"
+keyBox.Text = ""
+keyBox.TextScaled = true
+keyBox.Font = Enum.Font.GothamBold
+
+local keyCorner = Instance.new("UICorner", keyBox)
+keyCorner.CornerRadius = UDim.new(0,6)
+
+-- STATUS
+local status = Instance.new("TextLabel")
+status.Parent = main
+status.BackgroundTransparency = 1
+status.Position = UDim2.new(0,0,0.75,0)
+status.Size = UDim2.new(1,0,0,30)
+status.Text = ""
+status.TextScaled = true
+status.Font = Enum.Font.GothamBold
+status.TextColor3 = Color3.fromRGB(255,255,255)
+
+-- BUTTON
+local button = Instance.new("TextButton")
+button.Parent = main
+button.Size = UDim2.new(0,150,0,35)
+button.Position = UDim2.new(0.5,-75,0.82,0)
+button.Text = "SUBMIT"
+button.TextScaled = true
+button.Font = Enum.Font.GothamBlack
+button.BackgroundColor3 = Color3.fromRGB(0,170,255)
+button.TextColor3 = Color3.fromRGB(255,255,255)
+
+local btnCorner = Instance.new("UICorner", button)
+btnCorner.CornerRadius = UDim.new(0,6)
+
+-- DRAGGING
+local dragging
+local dragInput
+local dragStart
+local startPos
+
+local function update(input)
+	local delta = input.Position - dragStart
+	main.Position = UDim2.new(
+		startPos.X.Scale,
+		startPos.X.Offset + delta.X,
+		startPos.Y.Scale,
+		startPos.Y.Offset + delta.Y
+	)
+end
+
+main.InputBegan:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseButton1 then
+		dragging = true
+		dragStart = input.Position
+		startPos = main.Position
+
+		input.Changed:Connect(function()
+			if input.UserInputState == Enum.UserInputState.End then
+				dragging = false
+			end
+		end)
+	end
+end)
+
+main.InputChanged:Connect(function(input)
+	if input.UserInputType == Enum.UserInputType.MouseMovement then
+		dragInput = input
+	end
+end)
+
+game:GetService("UserInputService").InputChanged:Connect(function(input)
+	if input == dragInput and dragging then
+		update(input)
+	end
+end)
+
+-- BUTTON EFFECT
+button.MouseEnter:Connect(function()
+	TweenService:Create(button,TweenInfo.new(0.2),{
+		BackgroundColor3 = Color3.fromRGB(0,255,255)
+	}):Play()
+end)
+
+button.MouseLeave:Connect(function()
+	TweenService:Create(button,TweenInfo.new(0.2),{
+		BackgroundColor3 = Color3.fromRGB(0,170,255)
+	}):Play()
+end)
+
+-- KEY CHECK
+button.MouseButton1Click:Connect(function()
+
+	if keyBox.Text == correctKey then
+
+		status.Text = "KEY CORRECT!"
+		status.TextColor3 = Color3.fromRGB(0,255,0)
+
+		wait(1)
+
+		-- LOAD YOUR SCRIPT
+		loadstring(game:HttpGet("YOUR_SCRIPT_LINK"))()
+
+		gui:Destroy()
+
+	else
+
+		status.Text = "INVALID KEY!"
+		status.TextColor3 = Color3.fromRGB(255,0,0)
+
+	end
+end)
